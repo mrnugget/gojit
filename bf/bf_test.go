@@ -22,8 +22,16 @@ var dbfi = `
 >->>>>>]<<[>,>>>]<<[>+>]<<[+<<]<]`
 
 func TestCompile(t *testing.T) {
-	t.Skip("Crashes with 'exitsyscall: syscall frame is no longer valid'")
-	testImplementation(t, Compile)
+	t.Run("GoABI", func(t *testing.T) {
+		use_goabi()
+		defer reset_abi()
+		testImplementation(t, Compile)
+	})
+
+	t.Run("CgoABI", func(t *testing.T) {
+		t.Skip("Crashes with 'exitsyscall: syscall frame is no longer valid'")
+		testImplementation(t, Compile)
+	})
 }
 
 func TestInterpret(t *testing.T) {
@@ -101,21 +109,33 @@ func TestOptimize(t *testing.T) {
 }
 
 func TestGC(t *testing.T) {
-	t.Skip("Crashes with 'exitsyscall: syscall frame is no longer valid'")
-	var rw bytes.Buffer
-	prog, e := Compile([]byte(helloWorld), &rw, &rw)
-	if e != nil {
-		t.Fatalf("Compile: %s", e.Error())
-	}
-	var m runtime.MemStats
+	tc := func(t *testing.T) {
+		var rw bytes.Buffer
+		prog, e := Compile([]byte(helloWorld), &rw, &rw)
+		if e != nil {
+			t.Fatalf("Compile: %s", e.Error())
+		}
+		var m runtime.MemStats
 
-	for i := 0; i < 1000; i++ {
-		runtime.GC()
-		runtime.ReadMemStats(&m)
+		for i := 0; i < 1000; i++ {
+			runtime.GC()
+			runtime.ReadMemStats(&m)
 
-		mem := make([]byte, 2048)
-		prog(mem)
+			mem := make([]byte, 2048)
+			prog(mem)
+		}
 	}
+
+	t.Run("GoABI", func(t *testing.T) {
+		use_goabi()
+		defer reset_abi()
+		tc(t)
+	})
+
+	t.Run("CgoABI", func(t *testing.T) {
+		t.Skip("Crashes with 'exitsyscall: syscall frame is no longer valid'")
+		tc(t)
+	})
 }
 
 func BenchmarkCompileHello(b *testing.B) {
