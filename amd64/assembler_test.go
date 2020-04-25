@@ -32,7 +32,7 @@ func finish(a *Assembler) func(uintptr) uintptr {
 func newAsm(t testing.TB) *Assembler {
 	buf, e := gojit.Alloc(gojit.PageSize)
 	if e != nil {
-		t.Fatalf("alloc: ", e.Error())
+		t.Fatalf("alloc: %s", e.Error())
 	}
 	return &Assembler{buf, 0, CgoABI}
 }
