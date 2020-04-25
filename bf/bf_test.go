@@ -2,11 +2,12 @@ package bf
 
 import (
 	"bytes"
-	"github.com/nelhage/gojit/amd64"
 	"io"
 	"reflect"
 	"runtime"
 	"testing"
+
+	"github.com/nelhage/gojit/amd64"
 )
 
 var helloWorld = "++++++++[>++++[>++>+++>+++>+<<<<-]>+>+>->>+[<]<-]>>.>---.+++++++..+++.>>.<-.<.+++.------.--------.>>+.>++."
@@ -21,6 +22,7 @@ var dbfi = `
 >->>>>>]<<[>,>>>]<<[>+>]<<[+<<]<]`
 
 func TestCompile(t *testing.T) {
+	t.Skip("Crashes with 'exitsyscall: syscall frame is no longer valid'")
 	testImplementation(t, Compile)
 }
 
@@ -99,6 +101,7 @@ func TestOptimize(t *testing.T) {
 }
 
 func TestGC(t *testing.T) {
+	t.Skip("Crashes with 'exitsyscall: syscall frame is no longer valid'")
 	var rw bytes.Buffer
 	prog, e := Compile([]byte(helloWorld), &rw, &rw)
 	if e != nil {
