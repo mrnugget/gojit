@@ -8,22 +8,36 @@ import (
 )
 
 func TestCallFunc(t *testing.T) {
-	t.Skip("Crashes with 'exitsyscall: syscall frame is no longer valid'")
+	for _, tc := range []struct {
+		name string
+		abi  ABI
+	}{
+		{"CgoABI", CgoABI},
+		{"GoABI", GoABI},
+	} {
+		t.Run(tc.name, func(t *testing.T) {
+			if tc.abi == CgoABI {
+				t.Skip("Crashes with 'exitsyscall: syscall frame is no longer valid'")
+			}
 
-	asm := newAsm(t)
-	defer gojit.Release(asm.Buf)
+			asm := newAsm(t)
+			defer gojit.Release(asm.Buf)
 
-	called := false
+			asm.ABI = tc.abi
 
-	asm.CallFunc(func() { called = true })
-	asm.Ret()
+			called := false
 
-	var f func()
-	asm.BuildTo(&f)
-	f()
+			asm.CallFunc(func() { called = true })
+			asm.Ret()
 
-	if !called {
-		t.Error("CallFunc did not call the function")
+			var f func()
+			asm.BuildTo(&f)
+			f()
+
+			if !called {
+				t.Error("CallFunc did not call the function")
+			}
+		})
 	}
 }
 
