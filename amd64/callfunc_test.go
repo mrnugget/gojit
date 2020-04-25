@@ -16,10 +16,6 @@ func TestCallFunc(t *testing.T) {
 		{"GoABI", GoABI},
 	} {
 		t.Run(tc.name, func(t *testing.T) {
-			if tc.abi == CgoABI {
-				t.Skip("Crashes with 'exitsyscall: syscall frame is no longer valid'")
-			}
-
 			asm := newAsm(t)
 			defer gojit.Release(asm.Buf)
 
@@ -42,8 +38,6 @@ func TestCallFunc(t *testing.T) {
 }
 
 func TestRecursion(t *testing.T) {
-	t.Skip("Crashes with 'exitsyscall: syscall frame is no longer valid'")
-
 	asm := newAsm(t)
 	defer gojit.Release(asm.Buf)
 
@@ -66,8 +60,6 @@ func TestRecursion(t *testing.T) {
 }
 
 func TestGCInCallback(t *testing.T) {
-	t.Skip("Crashes with 'exitsyscall: syscall frame is no longer valid'")
-
 	asm := newAsm(t)
 	defer gojit.Release(asm.Buf)
 

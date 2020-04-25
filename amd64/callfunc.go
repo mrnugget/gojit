@@ -72,8 +72,12 @@ func (a *Assembler) CallFuncCgo(f interface{}) {
 
 	// Move calltarget into %rax
 	a.MovAbs(uint64(get_runtime_cgocallback_gofunc()), Rax)
+
+	// When the `Call` is enabled, it crashes with:
+	//		exitsyscall: syscall frame is no longer valid
 	// Call it
-	a.Call(Rax)
+	// a.Call(Rax)
+
 	// Clean up stack
 	a.Add(Imm{24}, Rsp)
 }
