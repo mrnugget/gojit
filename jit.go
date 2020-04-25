@@ -4,10 +4,11 @@
 package gojit
 
 import (
-	"github.com/edsrzf/mmap-go"
-	_ "github.com/nelhage/gojit/cgo"
 	"reflect"
 	"unsafe"
+
+	"github.com/edsrzf/mmap-go"
+	_ "github.com/nelhage/gojit/cgo"
 )
 
 type ABI int
