@@ -1,7 +1,7 @@
 #include "funcdata.h"
 #include "textflag.h"
 
-// cgocall(*args) with jitcode in the context blob
+// asmcgocall(*args) with jitcode in the context blob
 //   -> runtime·asmcgocall(jitcode, frame)
 TEXT ·cgocall(SB),NOSPLIT,$16
         NO_LOCAL_POINTERS
