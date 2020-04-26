@@ -53,14 +53,32 @@ func (a *Assembler) CallFuncCgo(f interface{}) {
 
 	framesize := calculateFramesize(f)
 
+	// Create enough space on stack for 3 (24/8==3) args (f, frame, framesize)
+	// to `cgocallback_gofunc`
 	a.Sub(Imm{24}, Rsp)
+
+	// Move framesize into last slot
 	a.Mov(Imm{int32(framesize)}, Indirect{Rsp, 16, 64})
+
+	// Now copy our own frame into %rax
 	a.Lea(Indirect{Rsp, 24, 64}, Rax)
+	// Copy from %rax onto stack
 	a.Mov(Rax, Indirect{Rsp, 8, 64})
+
+	// Move the address of the function into %rax
 	a.MovAbs(uint64(ival.fun), Rax)
+	// Copy from %rax onto stack
 	a.Mov(Rax, Indirect{Rsp, 0, 64})
+
+	// Move calltarget into %rax
 	a.MovAbs(uint64(get_runtime_cgocallback_gofunc()), Rax)
-	a.Call(Rax)
+
+	// When the `Call` is enabled, it crashes with:
+	//		exitsyscall: syscall frame is no longer valid
+	// Call it
+	// a.Call(Rax)
+
+	// Clean up stack
 	a.Add(Imm{24}, Rsp)
 }
 

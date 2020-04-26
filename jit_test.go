@@ -10,7 +10,9 @@ func TestBuild(t *testing.T) {
 		t.Fatalf("Alloc: %s", e.Error())
 	}
 	defer Release(b)
+
 	b[0] = 0xc3
+
 	for _, build := range []func([]byte) func(){Build, BuildCgo} {
 		f := build(b)
 		f()
